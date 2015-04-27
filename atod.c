@@ -1,5 +1,5 @@
 //
-// Gertboard 
+// atod.c    library function to read from Gertboard ADC 
 //
 // SPI (ADC/DAC) control code
 //
@@ -27,6 +27,7 @@
 
 #include "gb_common.h"
 #include "gb_spi.h"
+#include "atod.h"
 
 // Set GPIO pins to the right mode
 // DEMO GPIO mapping:
@@ -63,8 +64,26 @@ void setup_gpio()
 //
 //  Read ADC input 0 and show as horizontal bar
 //
-int read_adc(int chan)
-{ int r, v, s, i;
+int atod(int chan)
+{ 
+  int analogVal;
+
+#ifdef _DEBUG
+  printf("_DEBUG Mode: atod(%d)\n", chan);
+
+  printf ("These are the connections for the analogue to digital test:\n");
+  printf ("jumper connecting GP11 to SCLK\n");
+  printf ("jumper connecting GP10 to MOSI\n");
+  printf ("jumper connecting GP9 to MISO\n");
+  printf ("jumper connecting GP8 to CSnA\n");
+  printf ("Potentiometer connections:\n");
+  printf ("  (call 1 and 3 the ends of the resistor and 2 the wiper)\n");
+  printf ("  connect 3 to 3V3\n");
+  printf ("  connect 2 to AD%d\n", chan);
+  printf ("  connect 1 to GND\n");
+  printf ("When ready hit enter.\n");
+  (void) getchar();
+#endif
 
   // Map the I/O sections
   setup_io();
@@ -76,25 +95,14 @@ int read_adc(int chan)
   setup_spi();
 
   // The value returned by the A to D can jump around quite a bit, so 
-  // simply printing out the value isn't very useful. The bar graph
-  // is better because this hides the noise in the signal.
 
-  for (r=0; r<100000; r++)
-  {
-    v= read_adc(chan);
-    // V should be in range 0-1023
-    // map to 0-63
-    s = v >> 4;
-    printf("%04d ",v);
-    // show horizontal bar
-    for (i = 0; i < s; i++)
-      putchar('#');
-    for (i = 0; i < 64 - s; i++)
-      putchar(' ');
-    putchar(0x0D); // go to start of the line
-    short_wait();
-  } // repeated read
+  analogVal= read_adc(chan);
+  // should be in range 0-1023
+#ifdef _DEBUG
+  printf("read_adc(%d) returned %d [on a scale of 0 to 1023]\n", chan, analogVal);
+#endif
 
-  printf("\n");
-  restore_io();
-} // main
+//  restore_io();
+
+  return(analogVal);
+} // atod

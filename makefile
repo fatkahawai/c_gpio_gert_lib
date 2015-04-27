@@ -35,16 +35,16 @@ libgertboard.so.1 : libgertboard.so
 libgertboard.so : libgertboard.so.1.0
 	ln -sf libgertboard.so.1.0 libgertboard.so
 
-libgertboard.so.1.0 : gb_common.o gb_spio.o 
-	gcc -shared -Wl,-soname,libgertboard.so.1 -o libgertboard.so.1.0 gb_common.o gb_spio.o
+libgertboard.so.1.0 : atod.o gb_spi.o gb_common.o
+	gcc -shared -Wl,-soname,libgertboard.so.1 -o libgertboard.so.1.0 atod.o gb_spi.o gb_common.o
 
 # The next lines generate the various object files
 
 gb_common.o : gb_common.c gb_common.h
 	gcc -Wall -fPIC -c gb_common.c 
 
-gb_spio : gb_spio.c gb_spio.h
-	gcc -Wall -fPIC -c gb_spio.c
+gb_spi.o : gb_spi.c gb_spi.h
+	gcc -Wall -fPIC -c gb_spi.c
 
-# test.o : test.c halve.h
-#	gcc -c test.c
+atod.o : atod.c atod.h
+	gcc -D_DEBUG -Wall -fPIC -c atod.c
