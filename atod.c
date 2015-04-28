@@ -102,7 +102,7 @@ int atod(int chan)
   printf("read_adc(%d) returned %d [on a scale of 0 to 1023]\n", chan, analogVal);
 #endif
 
-//  restore_io();
+  restore_io();
 
   return(analogVal);
 } // atod
